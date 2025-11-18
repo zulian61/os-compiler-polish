@@ -1,0 +1,14 @@
+{
+  "name": "CatCore SDK",
+  "version": "v3.0.0",
+  "main": "build.html",
+  "chromium-args": "--enable-transparent-visuals --disable-gpu",
+  "window": {
+    "frame": false,
+    "width": 650,
+    "height": 430,
+    "position": "center",
+    "resizable": false
+  },
+  "user-agent": "CatCore SDK (%ver)"
+}
