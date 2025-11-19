@@ -392,9 +392,9 @@ window.addEventListener("DOMContentLoaded", () => {
           <br />
           <br />
           <select class="input" id="arch">
-            <option selected>x64</option>
-            <option>x86</option>
-            <option>ARM64</option>
+            <option value="x64" selected>x64</option>
+            <option value="x86">x86</option>
+            <option value="arm64">ARM64</option>
           </select>
         </div>
 
