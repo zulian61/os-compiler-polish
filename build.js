@@ -153,7 +153,7 @@ async function compile() {
   }
   var dist = path.join(process.cwd(), "dist");
   if (config.target == "macos-app") {
-    dist = path.join(dist, `${name}.app`, "Contents", "Resources", "nw.app");
+    dist = path.join(dist, `${name}.app`, "Contents", "Resources", "app.nw");
     fs.mkdirSync(dist);
   }
 
@@ -343,11 +343,11 @@ async function compile() {
     }
     if (config.target == "macos-app") {
       if (process.platform == "darwin") {
-        await new Promise(res => child_process.exec("xattr -cr System.app", {
+        await new Promise(res => child_process.exec(`xattr -cr ${name}.app`, {
           "cwd": path.join(process.cwd(), "dist")
         }, res));
       }
-      fs.chmodSync(path.join(process.cwd(), "dist", "System.app"), "0o777");
+      fs.chmodSync(path.join(process.cwd(), "dist", `${name}.app`), "0777");
     }
   }
 
