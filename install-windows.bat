@@ -3,17 +3,17 @@
 setlocal enabledelayedexpansion
 
 if "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
-  set ARCH=x64
+  set NW_ARCH=x64
   echo Detected: Windows ^(x64^)
 ) else if "%PROCESSOR_ARCHITECTURE%"=="x86" (
-  set ARCH=ia32
+  set NW_ARCH=ia32
   echo Detected: Windows ^(x86^)
 ) else (
   echo ERROR: Unsupported architecture: %PROCESSOR_ARCHITECTURE%
   exit /b 1
 )
 
-set URL=https://github.com/CatCoreV/os-compiler/releases/download/nw/catcore-nw-win-%ARCH%.zip
+set URL=https://github.com/CatCoreV/os-compiler/releases/download/nw/catcore-nw-win-%NW_ARCH%.zip
 set OUTPUT=nw.zip
 
 echo Downloading %URL%...

@@ -6,11 +6,11 @@ ARCH=$(uname -m)
 
 case "$ARCH" in
   x86_64)
-    NWJS_ARCH="x64"
+    NW_ARCH="x64"
     echo "Detected: MacOS (x64)"
     ;;
   aarch64|arm64)
-    NWJS_ARCH="arm64"
+    NW_ARCH="arm64"
     echo "Detected: MacOS (ARM64)"
     ;;
   *)
@@ -19,7 +19,7 @@ case "$ARCH" in
     ;;
 esac
 
-URL="https://github.com/CatCoreV/os-compiler/releases/download/nw/catcore-nw-macos-$ARCH.zip"
+URL="https://github.com/CatCoreV/os-compiler/releases/download/nw/catcore-nw-macos-$NW_ARCH.zip"
 OUTPUT="nw.zip"
 
 echo "Downloading $URL..."
