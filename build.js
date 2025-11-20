@@ -27,6 +27,11 @@
   }
 
   var compiling = false;
+  var targetMappings = {
+    "windows-app": "w",
+    "linux-app": "n",
+    "macos-app": "d"
+  };
 
   function openModal() {
     document.querySelector("#modal-overlay").style.display = "block";
@@ -360,12 +365,23 @@
         "recursive": true
       });
       if (config.kernel.startsWith(".")) {
+        fs.copyFileSync("bootloader-local.bin", path.join(process.cwd(), "dist", "fs", "boot", "bootloader.bin"));
+      } else {
+        document.querySelector("#status").innerText = "Downloading bootloader...";
+        document.querySelector("#status").style.color = "yellow";
+        try {
+          // TODO: Autodetect bootloader version
+          fs.writeFileSync("bootloader-cache.bin", Buffer.from(await fetch(`https://github.com/CatCoreV/catcore/releases/download/${config.kernel}/bootloader-${config.kernel}${targetMappings[config.target]}-${config.arch}`).then(res => res.arrayBuffer())));
+        } catch {}
+        fs.copyFileSync("bootloader-cache.bin", path.join(process.cwd(), "dist", "fs", "boot", "bootloader.bin"));
+      }
+      if (config.kernel.startsWith(".")) {
         fs.copyFileSync(config.kernel, path.join(process.cwd(), "dist", "fs", "boot", "kernel"));
       } else {
         document.querySelector("#status").innerText = "Downloading kernel...";
         document.querySelector("#status").style.color = "yellow";
         try {
-          fs.writeFileSync("kernel-cache", Buffer.from(await fetch(`https://github.com/CatCoreV/catcore/releases/download/${config.kernel}/kernel-${config.kernel}-${config.arch}`).then(res => res.arrayBuffer())));
+          fs.writeFileSync("kernel-cache", Buffer.from(await fetch(`https://github.com/CatCoreV/catcore/releases/download/${config.kernel}/kernel-${config.kernel}${targetMappings[config.target]}-${config.arch}`).then(res => res.arrayBuffer())));
         } catch {}
         fs.copyFileSync("kernel-cache", path.join(process.cwd(), "dist", "fs", "boot", "kernel"));
       }
