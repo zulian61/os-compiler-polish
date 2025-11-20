@@ -34,3 +34,5 @@ src/
 platforms/
 dist/
 kernel-local
+node_modules/
+package-lock.json
