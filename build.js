@@ -416,6 +416,136 @@
     document.querySelector("#compile").classList.remove("disabled");
   }
 
+  window.start = () => {
+    var src = path.join(process.cwd(), config.source);
+    try {
+      var system = JSON.parse(fs.readFileSync(path.join(src, "system.json")).toString("utf-8"));
+    } catch {
+      var system = {};
+    }
+    var name = (system.name || "System");
+
+    if (config.target == "windows-app") {
+      if (process.platform != "win32") {
+        document.querySelector("#status").innerText = "Unable to launch Windows app on a different platform.";
+        document.querySelector("#status").style.color = "red";
+        return;
+      }
+      if (!fs.existsSync(`dist/${name}.exe`)) {
+        document.querySelector("#status").innerText = `Unable to find "dist/${name}.exe". Did you compile first?`;
+        document.querySelector("#status").style.color = "red";
+        return;
+      }
+      child_process.spawn(`dist/${name}.exe`, {
+        "detached": true
+      });
+      document.querySelector("#status").innerText = "Ready!";
+      document.querySelector("#status").style.color = "lime";
+    } else if (config.target == "linux-app") {
+      if (process.platform == "darwin") {
+        document.querySelector("#status").innerText = "Unable to launch Linux app on MacOS.";
+        document.querySelector("#status").style.color = "red";
+        return;
+      }
+      if (!fs.existsSync(`dist/${name}`)) {
+        document.querySelector("#status").innerText = `Unable to find "dist/${name}". Did you compile first?`;
+        document.querySelector("#status").style.color = "red";
+        return;
+      }
+      if (process.platform == "win32") {
+        child_process.spawn("C:\\Windows\\System32\\wsl.exe", [`dist/${name}`], {
+          "detached": true
+        });
+      } else {
+        child_process.spawn(`dist/${name}`, {
+          "detached": true
+        });
+      }
+      document.querySelector("#status").innerText = "Ready!";
+      document.querySelector("#status").style.color = "lime";
+    } else if (config.target == "macos-app") {
+      if (process.platform != "darwin") {
+        document.querySelector("#status").innerText = "Unable to launch MacOS app on a different platform.";
+        document.querySelector("#status").style.color = "red";
+        return;
+      }
+      if (!fs.existsSync(`dist/${name}.app`)) {
+        document.querySelector("#status").innerText = `Unable to find "dist/${name}.app". Did you compile first?`;
+        document.querySelector("#status").style.color = "red";
+        return;
+      }
+      child_process.spawn("open", [`dist/${name}.app`], {
+        "detached": true
+      });
+      document.querySelector("#status").innerText = "Ready!";
+      document.querySelector("#status").style.color = "lime";
+    }
+  };
+
+  window.stop = () => {
+    var src = path.join(process.cwd(), config.source);
+    try {
+      var system = JSON.parse(fs.readFileSync(path.join(src, "system.json")).toString("utf-8"));
+    } catch {
+      var system = {};
+    }
+    var name = (system.name || "System");
+
+    if (config.target == "windows-app") {
+      if (process.platform != "win32") {
+        document.querySelector("#status").innerText = "Unable to stop Windows app on a different platform.";
+        document.querySelector("#status").style.color = "red";
+        return;
+      }
+      if (!fs.existsSync(`dist/${name}.exe`)) {
+        document.querySelector("#status").innerText = `Unable to find "dist/${name}.exe". Did you compile first?`;
+        document.querySelector("#status").style.color = "red";
+        return;
+      }
+      child_process.spawn("C:\\Windows\\System32\\taskkill.exe", ["/f", "/im", `${name}.exe`], {
+        "detached": true
+      });
+      document.querySelector("#status").innerText = "Ready!";
+      document.querySelector("#status").style.color = "lime";
+    } else if (config.target == "linux-app") {
+      if (process.platform == "darwin") {
+        document.querySelector("#status").innerText = "Unable to stop Linux app on MacOS.";
+        document.querySelector("#status").style.color = "red";
+        return;
+      }
+      if (!fs.existsSync(`dist/${name}`)) {
+        document.querySelector("#status").innerText = `Unable to find "dist/${name}". Did you compile first?`;
+        document.querySelector("#status").style.color = "red";
+        return;
+      }
+      if (process.platform == "win32") {
+        child_process.spawn("C:\\Windows\\System32\\wsl.exe", ["killall", "-9", name], {
+          "detached": true
+        });
+      } else {
+        child_process.spawn("killall", ["-9", name], {
+          "detached": true
+        });
+      }
+      document.querySelector("#status").innerText = "Ready!";
+      document.querySelector("#status").style.color = "lime";
+    } else if (config.target == "macos-app") {
+      if (process.platform != "darwin") {
+        document.querySelector("#status").innerText = "Unable to stop MacOS app on a different platform.";
+        document.querySelector("#status").style.color = "red";
+        return;
+      }
+      if (!fs.existsSync(`dist/${name}.app`)) {
+        document.querySelector("#status").innerText = `Unable to find "dist/${name}.app". Did you compile first?`;
+        document.querySelector("#status").style.color = "red";
+        return;
+      }
+      // TODO: Support
+      document.querySelector("#status").innerText = "Stopping MacOS apps is not currently supported.";
+      document.querySelector("#status").style.color = "red";
+    }
+  };
+
   window.addEventListener("DOMContentLoaded", () => {
     document.body.innerHTML = `
       <div id="titlebar">
@@ -501,7 +631,7 @@
         </div>
 
         <p id="status" style="color: lime;">Ready!</p>
-        <a class="compile" onclick="compile();" id="compile">COMPILE</a>
+        <a class="compile" onclick="compile();" id="compile">COMPILE</a> <i class="fa-sharp fa-solid fa-play extra" onclick="start();" style="background-color: #5fcf14;"></i> <i class="fa-sharp fa-solid fa-stop extra" onclick="stop();" style="background-color: #da1212;"></i>
       </center>
       <div id="modal-overlay" style="display: none;">
         <center>
