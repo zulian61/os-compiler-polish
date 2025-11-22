@@ -375,7 +375,9 @@
         "name": name,
         "version": system.version ? `${system.version.startsWith("v") ? "" : "v"}${system.version}` : "v0.0.1",
         "main": "index.html",
-        "window": {}
+        "window": {
+          "icon": (system.logo ? `./${(config.target == "macos-app") ? "../../../../" : ""}fs/system/${system.logo}` : "./catcore.png")
+        }
       };
       if (!config.windowed) {
         systemPackage.window.kiosk = true;
@@ -392,6 +394,9 @@
         "recursive": true
       });
       copyRecursive(src, path.join(process.cwd(), "dist", "fs", "system"));
+      if (!system.logo) {
+        fs.copyFileSync("catcore.png", path.join(process.cwd(), "dist", "fs", "system"));
+      }
       if (config.kernel.startsWith(".")) {
         fs.copyFileSync("bootloader-local.bin", path.join(process.cwd(), "dist", "fs", "boot", "bootloader.bin"));
       } else {
