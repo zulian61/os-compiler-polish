@@ -87,6 +87,9 @@
     if (fs.existsSync("kernel-local")) {
       versions.unshift("./kernel-local");
     }
+    if (config.dev && fs.existsSync("../kernel/dist")) {
+      versions.unshift(...fs.readdirSync("../kernel/dist").map(version => `../kernel/dist/${version}`));
+    }
     document.querySelector("#kernels").innerHTML = versions.map(version => `<option value="${version}">${version}</option>`);
     if (versions.includes(config.version)) {
       document.querySelector("#kernels").value = config.version;
