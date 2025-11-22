@@ -109,7 +109,9 @@
   }
 
   function copyRecursive(from, to) {
-    fs.mkdirSync(to);
+    if (!fs.existsSync(to)) {
+      fs.mkdirSync(to); 
+    }
     fs.readdirSync(from).forEach(content => {
       if (fs.statSync(path.join(from, content)).isDirectory()) {
         copyRecursive(path.join(from, content), path.join(to, content));
@@ -390,7 +392,7 @@
       fs.mkdirSync(path.join(process.cwd(), "dist", "fs", "boot"), {
         "recursive": true
       });
-      copyRecursive(src, path.join(process.cwd(), "dist", "fs", "system"));
+      copyRecursive(path.join(src, "overlay-fs"), path.join(process.cwd(), "dist", "fs"));
       if (!system.logo) {
         fs.copyFileSync("catcore.png", path.join(dist, "catcore.png"));
       }
