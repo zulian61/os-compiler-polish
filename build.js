@@ -390,9 +390,6 @@
       fs.mkdirSync(path.join(process.cwd(), "dist", "fs", "boot"), {
         "recursive": true
       });
-      fs.mkdirSync(path.join(process.cwd(), "dist", "fs", "system"), {
-        "recursive": true
-      });
       copyRecursive(src, path.join(process.cwd(), "dist", "fs", "system"));
       if (!system.logo) {
         fs.copyFileSync("catcore.png", path.join(dist, "catcore.png"));
