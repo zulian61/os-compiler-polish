@@ -103,10 +103,10 @@
     if (arch == "x86") {
       arch = "ia32";
     }
-    if (fs.existsSync(`platforms/catcore-nw-${system}-${arch}.zip`)) {
+    if (fs.existsSync(`platforms/catcore-nw-${system}-${arch}${sdk ? "-dev" : ""}.zip`)) {
       return;
     }
-    fs.writeFileSync(`platforms/catcore-nw-${system}-${arch}.zip`, Buffer.from(await fetch(`https://github.com/CatCoreV/os-compiler/releases/download/nw/catcore-nw-${system}-${arch}${sdk ? "-dev" : ""}.zip`).then(res => res.arrayBuffer())));
+    fs.writeFileSync(`platforms/catcore-nw-${system}-${arch}${sdk ? "-dev" : ""}.zip`, Buffer.from(await fetch(`https://github.com/CatCoreV/os-compiler/releases/download/nw/catcore-nw-${system}-${arch}${sdk ? "-dev" : ""}.zip`).then(res => res.arrayBuffer())));
   }
 
 
