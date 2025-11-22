@@ -502,7 +502,7 @@
     var src = path.join(process.cwd(), config.source);
     var system = {};
     try {
-      var system = JSON.parse(fs.readFileSync(path.join(src, "system.json")).toString("utf-8"));
+      system = JSON.parse(fs.readFileSync(path.join(src, "system.json")).toString("utf-8"));
     } catch {}
     var name = (system.name || "System");
 
