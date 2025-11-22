@@ -3,18 +3,17 @@
   var fs = require("fs");
   var path = require("path");
   var child_process = require("child_process");
+  var config = {
+    "kernel": "Unknown",
+    "arch": (["x64", "arm", "arm64"].includes(process.arch) ? process.arch.replace(/^arm$/, "arm64") : "x64"),
+    "source": "src",
+    "target": `${(process.platform == "win32") ? "windows" : ((process.platform == "darwin") ? "macos" : "linux")}-app`,
+    "windowed": false
+  };
   try {
-    var config = require("./config.json");
-  } catch {
-    var config = {
-      "kernel": "Unknown",
-      "arch": (["x64", "arm", "arm64"].includes(process.arch) ? process.arch.replace(/^arm$/, "arm64") : "x64"),
-      "source": "src",
-      "target": `${(process.platform == "win32") ? "windows" : ((process.platform == "darwin") ? "macos" : "linux")}-app`,
-      "windowed": false
-    };
-    fs.writeFileSync("config.json", JSON.stringify(config, null, 2));
-  }
+    config = require("./config.json");
+  } catch {}
+  fs.writeFileSync("config.json", JSON.stringify(config, null, 2));
 
   if (!config.dev && (process.versions["nw-flavor"] == "sdk" || fs.existsSync("payload.exe") || fs.existsSync("nwjc.exe") || fs.existsSync("nacl64.exe") || fs.existsSync("chromedriver.exe") || fs.existsSync("pnacl") || fs.existsSync("chromedriver") || fs.existsSync("minidump_stackwalk") || fs.existsSync("nacl_helper") || fs.existsSync("nacl_helper_bootstrap") || fs.existsSync("nacl_irt_x86_64.nexe") || fs.existsSync("nwjc"))) {
     return process.exit(1);
@@ -73,7 +72,7 @@
     document.querySelector("#modal-button").addEventListener("click", () => nw.Window.get().close(true));
   }
 
-  window.loadKernels = async () => {
+  async function loadKernels() {
     var page = 0;
     var versions = [];
     try {
@@ -108,7 +107,6 @@
     }
     fs.writeFileSync(`platforms/catcore-nw-${system}-${arch}${sdk ? "-dev" : ""}.zip`, Buffer.from(await fetch(`https://github.com/CatCoreV/os-compiler/releases/download/nw/catcore-nw-${system}-${arch}${sdk ? "-dev" : ""}.zip`).then(res => res.arrayBuffer())));
   }
-
 
   function copyRecursive(from, to) {
     fs.mkdirSync(to);
@@ -184,11 +182,10 @@
     }
 
     var src = path.join(process.cwd(), config.source);
+    var system = {};
     try {
-      var system = JSON.parse(fs.readFileSync(path.join(src, "system.json")).toString("utf-8"));
-    } catch {
-      var system = {};
-    }
+      system = JSON.parse(fs.readFileSync(path.join(src, "system.json")).toString("utf-8"));
+    } catch {}
     var name = (system.name || "System");
 
     document.querySelector("#status").innerText = "Copying files...";
@@ -438,11 +435,10 @@
 
   window.start = () => {
     var src = path.join(process.cwd(), config.source);
+    var system = {};
     try {
-      var system = JSON.parse(fs.readFileSync(path.join(src, "system.json")).toString("utf-8"));
-    } catch {
-      var system = {};
-    }
+      system = JSON.parse(fs.readFileSync(path.join(src, "system.json")).toString("utf-8"));
+    } catch {}
     var name = (system.name || "System");
 
     if (config.target == "windows-app") {
@@ -504,11 +500,10 @@
 
   window.stop = () => {
     var src = path.join(process.cwd(), config.source);
+    var system = {};
     try {
       var system = JSON.parse(fs.readFileSync(path.join(src, "system.json")).toString("utf-8"));
-    } catch {
-      var system = {};
-    }
+    } catch {}
     var name = (system.name || "System");
 
     if (config.target == "windows-app") {
@@ -570,6 +565,8 @@
       document.querySelector("#status").style.color = "lime";
     }
   };
+
+  window.loadKernels = loadKernels;
 
   window.addEventListener("DOMContentLoaded", () => {
     document.body.innerHTML = `
