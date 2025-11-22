@@ -331,6 +331,7 @@
         font-size: 18px;
         color: white;
         text-align: center;
+        user-select: none;
       }
       .cctext {
         position: fixed;
