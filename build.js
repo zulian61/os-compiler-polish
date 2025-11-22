@@ -395,7 +395,9 @@
       fs.mkdirSync(path.join(process.cwd(), "dist", "fs", "boot"), {
         "recursive": true
       });
-      copyRecursive(path.join(src, "overlay-fs"), path.join(process.cwd(), "dist", "fs"));
+      if (fs.existsSync(path.join(src, "overlay-fs"))) {
+        copyRecursive(path.join(src, "overlay-fs"), path.join(process.cwd(), "dist", "fs"));
+      }
       if (!system.logo) {
         fs.copyFileSync("catcore.png", path.join(dist, "catcore.png"));
       }
