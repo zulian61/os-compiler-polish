@@ -560,9 +560,14 @@
         document.querySelector("#status").style.color = "red";
         return;
       }
-      // TODO: Support
-      document.querySelector("#status").innerText = "Stopping MacOS apps is not currently supported.";
-      document.querySelector("#status").style.color = "red";
+      if (name.includes("'")) {
+        document.querySelector("#status").innerText = "System name includes unsafe characters.";
+        document.querySelector("#status").style.color = "red";
+        return;
+      }
+      child_process.exec(`kill -9 $(ps -eo pid,command | grep 'dist/${name}.app/Contents/MacOS/nwjs' | grep -v grep | awk '{print $1}')`);
+      document.querySelector("#status").innerText = "Ready!";
+      document.querySelector("#status").style.color = "lime";
     }
   };
 
