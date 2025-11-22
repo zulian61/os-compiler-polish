@@ -96,7 +96,7 @@
     }
   }
 
-  async function downloadPlatform(system, arch) {
+  async function downloadPlatform(system, arch, sdk) {
     if (system == "windows") {
       system = "win";
     }
@@ -106,7 +106,7 @@
     if (fs.existsSync(`platforms/catcore-nw-${system}-${arch}.zip`)) {
       return;
     }
-    fs.writeFileSync(`platforms/catcore-nw-${system}-${arch}.zip`, Buffer.from(await fetch(`https://github.com/CatCoreV/os-compiler/releases/download/nw/catcore-nw-${system}-${arch}.zip`).then(res => res.arrayBuffer())));
+    fs.writeFileSync(`platforms/catcore-nw-${system}-${arch}.zip`, Buffer.from(await fetch(`https://github.com/CatCoreV/os-compiler/releases/download/nw/catcore-nw-${system}-${arch}${sdk ? "-dev" : ""}.zip`).then(res => res.arrayBuffer())));
   }
 
 
@@ -139,6 +139,9 @@
     config.target = document.querySelector("#target").value;
     config.windowed = document.querySelector("#windowed").checked;
     var sdk = document.querySelector("#sdk").checked;
+    if (!config.dev) {
+      sdk = false;
+    }
     fs.writeFileSync("config.json", JSON.stringify(config, null, 2));
 
     // Clean last compilation
@@ -170,11 +173,11 @@
     if (config.target.match(/^(windows|linux|macos)-app$/)) {
       document.querySelector("#status").innerText = "Downloading...";
       document.querySelector("#status").style.color = "yellow";
-      await downloadPlatform(config.target.replace("-app", ""), config.arch);
+      await downloadPlatform(config.target.replace("-app", ""), config.arch, sdk);
       document.querySelector("#status").innerText = "Unpacking...";
       document.querySelector("#status").style.color = "yellow";
       await new Promise(res => {
-        child_process.exec(`${(process.platform == "win32") ? "tar -xf" : "unzip"} ../platforms/catcore-nw-${(config.target == "windows-app") ? "win" : config.target.replace("-app", "")}-${config.arch}.zip`, {
+        child_process.exec(`${(process.platform == "win32") ? "tar -xf" : "unzip"} ../platforms/catcore-nw-${(config.target == "windows-app") ? "win" : config.target.replace("-app", "")}-${config.arch}${sdk ? "-dev" : ""}.zip`, {
           "cwd": path.join(process.cwd(), "dist")
         }, res);
       });
