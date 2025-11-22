@@ -678,5 +678,6 @@
     document.querySelector("#arch").value = config.arch;
     document.querySelector("#source").value = config.source;
     document.querySelector("#target").value = config.target;
+    document.querySelector("#windowed").checked = config.windowed;
   });
 })();
