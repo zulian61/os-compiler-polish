@@ -382,13 +382,16 @@
       }
       fs.writeFileSync(path.join(dist, "package.json"), JSON.stringify(systemPackage, null, 2));
       fs.writeFileSync(path.join(dist, "index.html"), html);
-      copyRecursive(src, path.join(dist, "system"));
       try {
         fs.unlinkSync(path.join(dist, "system", "system.json"));
       } catch {}
       fs.mkdirSync(path.join(process.cwd(), "dist", "fs", "boot"), {
         "recursive": true
       });
+      fs.mkdirSync(path.join(process.cwd(), "dist", "fs", "system"), {
+        "recursive": true
+      });
+      copyRecursive(src, path.join(process.cwd(), "dist", "fs", "system"));
       if (config.kernel.startsWith(".")) {
         fs.copyFileSync("bootloader-local.bin", path.join(process.cwd(), "dist", "fs", "boot", "bootloader.bin"));
       } else {
@@ -424,6 +427,7 @@
             "cwd": path.join(process.cwd(), "dist")
           }, res));
         }
+        fs.copyFileSync("catcore.icns", path.join(process.cwd(), "dist", `${name}.app`, "Contents", "Resources", "nw.icns"));
       }
     }
 
