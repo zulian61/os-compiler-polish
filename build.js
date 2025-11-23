@@ -580,7 +580,7 @@
         }
         fs.copyFileSync("catcore.icns", path.join(process.cwd(), "dist", `${name}.app`, "Contents", "Resources", "nw.icns"));
         fs.copyFileSync("catcore.icns", path.join(process.cwd(), "dist", `${name}.app`, "Contents", "Resources", "app.icns"));
-        fs.copyFileSync("catcore.icns", path.join(process.cwd(), "dist", `${name}.app`, "Contents", "Resources", "documents.icns"));
+        fs.copyFileSync("catcore.icns", path.join(process.cwd(), "dist", `${name}.app`, "Contents", "Resources", "document.icns"));
       }
     }
 
