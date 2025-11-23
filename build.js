@@ -492,8 +492,12 @@
   <body>
     <div class="bootscreen">
       <div>
-        <div class="imageCont prtclk" data-back="false">${system.logo ? `\n          <img width="180px" height="180px" data-free="false" src="${(config.target == "macos-app") ? "../../../../" : ""}fs/system/${system.logo}" onerror="this.style.visibility='hidden';" draggable="false">` : ""}
+        <div class="imageCont prtclk" data-back="false">${system.logo ? `\n          <img width="180px" height="180px" data-free="false" src="fs/system/${system.logo}" onerror="this.style.visibility='hidden';" draggable="false">` : ""}
         </div>
+        ${(config.target == "macos-app") ? `<script>
+          document.querySelector(".imageCont img").style.visibility = "";
+          document.querySelector(".imageCont img").src = path.join(process.cwd(), "..", "..", "..", "..", "fs", "system", "${system.logo}");
+        </script>` : ""}
         ${loader}
         <p class="bootextra">Loading bootloader...</p>
       </div>
@@ -508,6 +512,7 @@
         "name": name,
         "version": system.version ? `${system.version.startsWith("v") ? "" : "v"}${system.version}` : "v0.0.1",
         "main": "index.html",
+        "chromium-args": "--allow-file-access-from-files --allow-file-access",
         "window": {
           "icon": (system.logo ? `./${(config.target == "macos-app") ? "../../../../" : ""}fs/system/${system.logo}` : "./catcore.png")
         }
