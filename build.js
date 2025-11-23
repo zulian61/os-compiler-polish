@@ -739,7 +739,7 @@
   function openCompiler() {
     document.body.innerHTML = `
       <div id="titlebar">
-        <p id="language" onclick="toggleLanguageSelect();">${config.language.toUpperCase()} <i class="fa-duotone fa-solid fa-caret-down"></i></p>
+        <p id="language" onclick="toggleLanguageSelect();">${(config.language || "en").toUpperCase()} <i class="fa-duotone fa-solid fa-caret-down"></i></p>
         <p id="minimize" onclick="nw.Window.get().minimize();">
           <i class="fa-sharp fa-solid fa-window-minimize"></i>
         </p>
