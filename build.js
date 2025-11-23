@@ -522,9 +522,6 @@
       }
       fs.writeFileSync(path.join(dist, "package.json"), JSON.stringify(systemPackage, null, 2));
       fs.writeFileSync(path.join(dist, "index.html"), html);
-      try {
-        fs.unlinkSync(path.join(dist, "system", "system.json"));
-      } catch {}
       fs.mkdirSync(path.join(process.cwd(), "dist", "fs", "boot"), {
         "recursive": true
       });
@@ -534,6 +531,7 @@
       fs.mkdirSync(path.join(process.cwd(), "dist", "fs", "system"), {
         "recursive": true
       });
+      copyRecursive("osmod", path.join(dist, "node_modules"));
       if (fs.existsSync(path.join(src, "overlay-fs"))) {
         copyRecursive(path.join(src, "overlay-fs"), path.join(process.cwd(), "dist", "fs"));
       }

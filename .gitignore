@@ -32,7 +32,7 @@ nwjc.exe
 config.json
 src/
 platforms/
-dist/
+/dist/
 kernel-local
 node_modules/
 package-lock.json
