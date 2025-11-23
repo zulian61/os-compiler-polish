@@ -8,7 +8,7 @@
     ["en"]
   ];
   var config = {
-    "language": supportedLanguages.find(lang => (lang.length < 2 || lang[0].includes(navigator.language)))[1],
+    "language": supportedLanguages.find(lang => (lang.length < 2 || lang[0].includes(navigator.language))).at(-1),
     "kernel": "Unknown",
     "arch": (["x64", "arm", "arm64"].includes(process.arch) ? process.arch.replace(/^arm$/, "arm64") : "x64"),
     "source": "src",
