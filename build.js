@@ -396,6 +396,9 @@
       fs.mkdirSync(path.join(process.cwd(), "dist", "fs", "boot"), {
         "recursive": true
       });
+      fs.mkdirSync(path.join(process.cwd(), "dist", "fs", "config"), {
+        "recursive": true
+      });
       fs.mkdirSync(path.join(process.cwd(), "dist", "fs", "system"), {
         "recursive": true
       });
