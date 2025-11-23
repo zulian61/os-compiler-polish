@@ -185,6 +185,7 @@
       res = await res.json();
       for (var asset of res) {
         if (asset.type == "file") {
+          document.querySelector("#modal-title").innerHTML = `${text("updating")}<br />${asset.path}`;
           fs.writeFileSync(asset.path, Buffer.from(await fetch(asset.download_url).then(res => res.arrayBuffer())));
         }
         if (asset.type == "dir") {
