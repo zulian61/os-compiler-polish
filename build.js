@@ -454,10 +454,11 @@
       #loader2-fg {
         position: relative;
         bottom: 6px;
-        width: 200px;
+        width: 0px;
         height: 6px;
         border-radius: 10px;
         background-color: white;
+        transition: width .3s ease-in-out;
       }
       .bootextra {
         font-family: monospace;
