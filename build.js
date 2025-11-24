@@ -207,15 +207,19 @@
 
   async function loadKernels() {
     var page = 0;
-    var versions = [];
+    var versions = [config.kernel];
+    var releases = [];
     try {
       do {
         page++;
         var res = await fetch(`https://api.github.com/repos/CatCoreV/catcore/releases?per_page=100&page=${page}`);
-        versions.push(...(await res.json()).filter(version => !version.prerelease || config.dev).map(version => version.tag_name).filter(version => version.startsWith("v")));
+        releases.push(...(await res.json()));
       } while(res.headers.has("link") && res.headers.get("link").includes(`rel="next"`));
     } catch {
-      versions = [config.kernel];
+      releases = [];
+    }
+    if (releases.length) {
+      versions = releases.sort((a, b) => (new Date(b.published_at)).getTime() - (new Date(a.published_at)).getTime()).filter(version => !version.prerelease || config.dev).map(version => version.tag_name).filter(version => version.startsWith("v"));
     }
     if (fs.existsSync("kernel-local")) {
       versions.unshift("./kernel-local");
