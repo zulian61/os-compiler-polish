@@ -462,7 +462,7 @@
         height: 6px;
         border-radius: 10px;
         background-color: white;
-        transition: width .3s ease-in-out;
+        transition: width .3s linear;
       }
       .bootextra {
         font-family: monospace;
