@@ -545,6 +545,9 @@
       fs.mkdirSync(path.join(process.cwd(), "dist", "fs", "system"), {
         "recursive": true
       });
+      fs.mkdirSync(path.join(process.cwd(), "dist", "fs", "data"), {
+        "recursive": true
+      });
       copyRecursive("osmod", path.join(dist, "node_modules"));
       if (fs.existsSync(path.join(src, "overlay-fs"))) {
         copyRecursive(path.join(src, "overlay-fs"), path.join(process.cwd(), "dist", "fs"));
