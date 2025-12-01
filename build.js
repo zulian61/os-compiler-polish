@@ -248,17 +248,19 @@
     fs.writeFileSync(`platforms/catcore-nw-${system}-${arch}${sdk ? "-dev" : ""}.zip`, Buffer.from(await fetch(`https://github.com/CatCoreV/os-compiler/releases/download/nw/catcore-nw-${system}-${arch}${sdk ? "-dev" : ""}.zip`).then(res => res.arrayBuffer())));
   }
 
-  function copyRecursive(from, to) {
+  async function copyRecursive(from, to) {
     if (!fs.existsSync(to)) {
       fs.mkdirSync(to);
     }
-    fs.readdirSync(from).forEach(content => {
+    for (var content of fs.readdirSync(from)) {
       if (fs.statSync(path.join(from, content)).isDirectory()) {
-        copyRecursive(path.join(from, content), path.join(to, content));
+        await copyRecursive(path.join(from, content), path.join(to, content));
       } else {
-        fs.copyFileSync(path.join(from, content), path.join(to, content));
+        await new Promise(res => {
+          fs.copyFile(path.join(from, content), path.join(to, content), () => res());
+        });
       }
-    });
+    }
   }
 
   window.compile = async () => {
@@ -548,9 +550,9 @@
       fs.mkdirSync(path.join(process.cwd(), "dist", "fs", "data"), {
         "recursive": true
       });
-      copyRecursive("osmod", path.join(dist, "node_modules"));
+      await copyRecursive("osmod", path.join(dist, "node_modules"));
       if (fs.existsSync(path.join(src, "overlay-fs"))) {
-        copyRecursive(path.join(src, "overlay-fs"), path.join(process.cwd(), "dist", "fs"));
+        await copyRecursive(path.join(src, "overlay-fs"), path.join(process.cwd(), "dist", "fs"));
       }
       if (!system.logo) {
         fs.copyFileSync("catcore.png", path.join(dist, "catcore.png"));
