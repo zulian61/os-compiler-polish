@@ -110,7 +110,7 @@
       "copying": "Копирование файлов...",
       "local_bootloader_not_found": `Файл "bootloader-local.bin" не найден.`,
       "downloading_bootloader": "Скачивание загрузчика...",
-      "downloading_kernel": "Скаичвание ядра...",
+      "downloading_kernel": "Скачивание ядра...",
       "applying_fixes": "Принятие исправлений...",
       "unable_to_find": "Не удалось найти",
       "did_you_compile_first": "Вы скомпилировали перед этим?",
