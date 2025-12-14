@@ -78,7 +78,8 @@
       "unable_stop_windows_app_on_other_platform": "Unable to stop Windows app on a different platform.",
       "unable_stop_linux_app_on_macos": "Unable to stop Linux app on MacOS.",
       "unable_stop_macos_app_on_other_platform": "Unable to stop MacOS app on a different platform.",
-      "system_name_unsafe": "System name includes unsafe characters."
+      "system_name_unsafe": "System name includes unsafe characters.",
+      "quick": "Quick"
     },
     "ru": {
       "catcore_compiler": "Компилятор CatCore",
@@ -120,7 +121,8 @@
       "unable_stop_windows_app_on_other_platform": "Не удалось остановить Windows приложение на другой платформе.",
       "unable_stop_linux_app_on_macos": "Не удалось остановить Linux приложение на MacOS.",
       "unable_stop_macos_app_on_other_platform": "Не удалось остановить MacOS приложение на другой платформе.",
-      "system_name_unsafe": "Название системы содержит небезопасные символы."
+      "system_name_unsafe": "Название системы содержит небезопасные символы.",
+      "quick": "Быстро"
     }
   };
 
@@ -288,35 +290,38 @@
     if (!config.dev) {
       sdk = false;
     }
+    var quick = document.querySelector("#quick").checked;
     fs.writeFileSync("config.json", JSON.stringify(config, null, 2));
 
     // Clean last compilation
-    document.querySelector("#status").innerText = text("cleaning");
-    document.querySelector("#status").style.color = "yellow";
-    try {
-      await new Promise((res, rej) => {
-        fs.rm("dist", {
-          "recursive": true,
-          "force": true
-        }, (err) => {
-          if (err) {
-            rej();
-          } else {
-            res();
-          }
+    if (!quick) {
+      document.querySelector("#status").innerText = text("cleaning");
+      document.querySelector("#status").style.color = "yellow";
+      try {
+        await new Promise((res, rej) => {
+          fs.rm("dist", {
+            "recursive": true,
+            "force": true
+          }, (err) => {
+            if (err) {
+              rej();
+            } else {
+              res();
+            }
+          });
         });
-      });
-      fs.mkdirSync("dist");
-    } catch {
-      document.querySelector("#status").innerText = text("cleaning_failed");
-      document.querySelector("#status").style.color = "red";
-      compiling = false;
-      document.querySelector("#compile").classList.remove("disabled");
-      return;
+        fs.mkdirSync("dist");
+      } catch {
+        document.querySelector("#status").innerText = text("cleaning_failed");
+        document.querySelector("#status").style.color = "red";
+        compiling = false;
+        document.querySelector("#compile").classList.remove("disabled");
+        return;
+      }
     }
 
     // If target is an app, download and unpack nw
-    if (config.target.match(/^(windows|linux|macos)-app$/)) {
+    if (!quick && config.target.match(/^(windows|linux|macos)-app$/)) {
       document.querySelector("#status").innerText = text("downloading");
       document.querySelector("#status").style.color = "yellow";
       await downloadPlatform(config.target.replace("-app", ""), config.arch, sdk);
@@ -338,13 +343,13 @@
 
     document.querySelector("#status").innerText = text("copying");
     document.querySelector("#status").style.color = "yellow";
-    if (config.target == "windows-app") {
+    if (!quick && config.target == "windows-app") {
       fs.renameSync("dist/nw.exe", `dist/${name}.exe`);
     }
-    if (config.target == "linux-app") {
+    if (!quick && config.target == "linux-app") {
       fs.renameSync("dist/nw", `dist/${name}`);
     }
-    if (config.target == "macos-app") {
+    if (!quick && config.target == "macos-app") {
       fs.renameSync("dist/nw.app", `dist/${name}.app`);
     }
     var dist = path.join(process.cwd(), "dist");
@@ -539,6 +544,24 @@
       }
       fs.writeFileSync(path.join(dist, "package.json"), JSON.stringify(systemPackage, null, 2));
       fs.writeFileSync(path.join(dist, "index.html"), html);
+      if (quick) {
+        fs.rmSync(path.join(process.cwd(), "dist", "fs", "bin"), {
+          "recursive": true,
+          "force": true
+        });
+        fs.rmSync(path.join(process.cwd(), "dist", "fs", "boot"), {
+          "recursive": true,
+          "force": true
+        });
+        fs.rmSync(path.join(process.cwd(), "dist", "fs", "config"), {
+          "recursive": true,
+          "force": true
+        });
+        fs.rmSync(path.join(process.cwd(), "dist", "fs", "system"), {
+          "recursive": true,
+          "force": true
+        });
+      }
       fs.mkdirSync(path.join(process.cwd(), "dist", "fs", "bin"), {
         "recursive": true
       });
@@ -551,9 +574,11 @@
       fs.mkdirSync(path.join(process.cwd(), "dist", "fs", "system"), {
         "recursive": true
       });
-      fs.mkdirSync(path.join(process.cwd(), "dist", "fs", "data"), {
-        "recursive": true
-      });
+      if (!quick) {
+        fs.mkdirSync(path.join(process.cwd(), "dist", "fs", "data"), {
+          "recursive": true
+        });
+      }
       await copyRecursive("osmod", path.join(dist, "node_modules"));
       if (fs.existsSync(path.join(src, "overlay-fs"))) {
         await copyRecursive(path.join(src, "overlay-fs"), path.join(process.cwd(), "dist", "fs"));
@@ -575,6 +600,9 @@
         document.querySelector("#status").innerText = text("downloading_bootloader");
         document.querySelector("#status").style.color = "yellow";
         try {
+          if (quick) {
+            throw "";
+          }
           var release = await fetch(`https://api.github.com/repos/CatCoreV/catcore/releases/tags/${config.kernel}`).then(res => res.json());
           var bootloaderVersion = release.assets.find(asset => asset.name.startsWith("bootloader-")).name.match(/^bootloader-(\d\.\d\.\d)/)[1];
           fs.writeFileSync("bootloader-cache.bin", Buffer.from(await fetch(`https://github.com/CatCoreV/catcore/releases/download/${config.kernel}/bootloader-${bootloaderVersion}${targetMappings[config.target]}-${config.arch}`).then(res => res.arrayBuffer())));
@@ -587,12 +615,15 @@
         document.querySelector("#status").innerText = text("downloading_kernel");
         document.querySelector("#status").style.color = "yellow";
         try {
+          if (quick) {
+            throw "";
+          }
           fs.writeFileSync("kernel-cache", Buffer.from(await fetch(`https://github.com/CatCoreV/catcore/releases/download/${config.kernel}/kernel-${config.kernel.replace("v", "")}${targetMappings[config.target]}-${config.arch}`).then(res => res.arrayBuffer())));
           fs.writeFileSync("catcore.d.ts", Buffer.from(await fetch(`https://github.com/CatCoreV/catcore/releases/download/${config.kernel}/catcore.d.ts`).then(res => res.arrayBuffer())));
         } catch {}
         fs.copyFileSync("kernel-cache", path.join(process.cwd(), "dist", "fs", "boot", "kernel"));
       }
-      if (config.target == "macos-app") {
+      if (!quick && config.target == "macos-app") {
         document.querySelector("#status").innerText = text("applying_fixes");
         document.querySelector("#status").style.color = "yellow";
         if (process.platform == "darwin") {
@@ -615,6 +646,7 @@
     document.querySelector("#status").style.color = "lime";
     compiling = false;
     document.querySelector("#compile").classList.remove("disabled");
+    document.querySelector("#quick").disabled = false;
   }
 
   window.start = () => {
@@ -846,11 +878,13 @@
               <option value="linux-app">${text("linux_app")}</option>
               <option value="macos-app">${text("macos_app")}</option>
               <option value="iso" disabled>${text("bootable_iso")}</option>
-              <option value="milkv-duos-sd" disabled>MilkV DuoS SD</option>
-              <option value="milkv-duos-emmc" disabled>MilkV DuoS EMMC</option>
+              <option value="milkv-duos-sd" disabled>Milk-V Duo S (SD)</option>
+              <option value="milkv-duos-emmc" disabled>Milk-V Duo S (EMMC)</option>
             </select>
             <br />
             <label><input type="checkbox" id="windowed"> ${text("windowed")}</label>
+            <br />
+            <label><input type="checkbox" id="quick" disabled> ${text("quick")}</label>
             ${config.dev ? `<br />
             <label><input type="checkbox" id="sdk"> SDK</label>` : ""}
           </div>
@@ -880,6 +914,16 @@
     document.querySelector("#source").value = config.source;
     document.querySelector("#target").value = config.target;
     document.querySelector("#windowed").checked = config.windowed;
+
+    // Disable quick mode when kernel/arch/target/sdk was changed
+    function disableQuick() {
+      document.querySelector("#quick").checked = false;
+      document.querySelector("#quick").disabled = true;
+    }
+    document.querySelector("#kernels").addEventListener("change", disableQuick);
+    document.querySelector("#arch").addEventListener("change", disableQuick);
+    document.querySelector("#target").addEventListener("change", disableQuick);
+    document.querySelector("#sdk").addEventListener("change", disableQuick);
   }
 
   window.addEventListener("DOMContentLoaded", openCompiler);

@@ -6,7 +6,7 @@
   "window": {
     "frame": false,
     "width": 850,
-    "height": 430,
+    "height": 450,
     "position": "center",
     "resizable": false,
     "icon": "./catcore.png"
