@@ -604,6 +604,7 @@
           appFile = "app.rb";
         }
         var compiled = Buffer.from(btoa(encodeURIComponent(JSON.stringify(Object.assign(JSON.parse(fs.readFileSync(path.join(src, "apps", app, "app.json")).toString("utf-8")), {
+          "name": app,
           "code": (appFile ? fs.readFileSync(path.join(src, "apps", app, appFile)).toString("utf-8") : "")
         })))).split("").reverse().join(""));
         compiled = Buffer.concat([Buffer.from([0x62, 0x80, 0x62, 0x80, 0x02, appType, 0]), compiled]);
