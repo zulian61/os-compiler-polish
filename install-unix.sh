@@ -72,4 +72,5 @@ if [ "$NW_SYSTEM" == "macos" ]; then
   touch "Catcore Compiler.app"
 else
   mv nw catcore_compiler
+  chmod +x catcore_compiler
 fi
