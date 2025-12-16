@@ -355,7 +355,9 @@
     var dist = path.join(process.cwd(), "dist");
     if (config.target == "macos-app") {
       dist = path.join(dist, `${name}.app`, "Contents", "Resources", "app.nw");
-      fs.mkdirSync(dist);
+      if (!fs.existsSync(dist)) {
+        fs.mkdirSync(dist);
+      }
     }
 
     var loader = `        <div class="mt-48" id="loader">
