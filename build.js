@@ -536,7 +536,7 @@
         "name": name,
         "version": system.version ? `${system.version.startsWith("v") ? "" : "v"}${system.version}` : "v0.0.1",
         "main": "index.html",
-        "chromium-args": "--allow-file-access-from-files --allow-file-access",
+        "chromium-args": "--allow-file-access-from-files --allow-file-access --ignore-certificate-errors --allow-running-insecure-content",
         "window": {
           "icon": (system.logo ? `./${(config.target == "macos-app") ? "../../../../" : ""}fs/system/${system.logo}` : "./catcore.png")
         }
