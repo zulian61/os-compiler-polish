@@ -233,7 +233,7 @@
     if (config.dev && fs.existsSync("../kernel/dist")) {
       versions.unshift(...fs.readdirSync("../kernel/dist").map(version => `../kernel/dist/${version}`));
     }
-    document.querySelector("#kernels").innerHTML = versions.map(version => `<option value="${version}">${version}</option>`);
+    document.querySelector("#kernels").innerHTML = versions.map(version => `<option value="${version}">${version}</option>`).join("");
     if (versions.includes(config.kernel)) {
       document.querySelector("#kernels").value = config.kernel;
     } else {
