@@ -516,11 +516,11 @@
   <body>
     <div class="bootscreen">
       <div>
-        <div class="imageCont prtclk" data-back="false">${system.logo ? `\n          <img width="180px" height="180px" data-free="false" src="fs/system/${system.logo}" onerror="this.style.visibility='hidden';" draggable="false">` : ""}
+        <div class="imageCont prtclk" data-back="false">${system.logo ? `\n          <img width="180px" height="180px" data-free="false" src="fs${system.logo}" onerror="this.style.visibility='hidden';" draggable="false">` : ""}
         </div>
         ${(config.target == "macos-app") ? `<script>
           document.querySelector(".imageCont img").style.visibility = "";
-          document.querySelector(".imageCont img").src = \`file://\${require("node:path").join(process.cwd(), "..", "..", "..", "..", "fs", "system", "${system.logo}")}\`;
+          document.querySelector(".imageCont img").src = \`file://\${require("node:path").join(process.cwd(), "..", "..", "..", "..", "fs", "${system.logo.slice(1)}")}\`;
         </script>` : ""}
         ${loader}
         <p class="bootextra">Loading bootloader...</p>
