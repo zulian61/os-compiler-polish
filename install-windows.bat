@@ -9,6 +9,10 @@ if "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
 ) else if "%PROCESSOR_ARCHITECTURE%"=="x86" (
   set NW_ARCH=ia32
   echo Detected: Windows ^(x86^)
+) else if "%PROCESSOR_ARCHITECTURE%"=="ARM64" (
+  set NW_ARCH=x64
+  echo Detected: Windows ^(ARM64^)
+  echo Warning: Windows ^(ARM64^) is not supported, installing x64 version using emulation
 ) else (
   echo ERROR: Unsupported architecture: %PROCESSOR_ARCHITECTURE%
   exit /b 1
