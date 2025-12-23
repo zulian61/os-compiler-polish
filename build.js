@@ -70,6 +70,7 @@
       "local_bootloader_not_found": `File "bootloader-local.bin" not found.`,
       "downloading_bootloader": "Downloading bootloader...",
       "downloading_kernel": "Downloading kernel...",
+      "downloading_kexts": "Downloading kernel extensions...",
       "applying_fixes": "Applying fixes...",
       "unable_to_find": "Unable to find",
       "did_you_compile_first": "Did you compile first?",
@@ -114,6 +115,7 @@
       "local_bootloader_not_found": `Файл "bootloader-local.bin" не найден.`,
       "downloading_bootloader": "Скачивание загрузчика...",
       "downloading_kernel": "Скачивание ядра...",
+      "downloading_kexts": "Скачивание расширений ядра...",
       "applying_fixes": "Принятие исправлений...",
       "unable_to_find": "Не удалось найти",
       "did_you_compile_first": "Вы скомпилировали перед этим?",
@@ -278,7 +280,7 @@
       versions.unshift("./kernel-local");
     }
     if (config.dev && fs.existsSync("../kernel/dist")) {
-      versions.unshift(...fs.readdirSync("../kernel/dist").map(version => `../kernel/dist/${version}`));
+      versions.unshift(...fs.readdirSync("../kernel/dist").filter(version => version != "kexts").map(version => `../kernel/dist/${version}`));
     }
     document.querySelector("#kernels").innerHTML = versions.map(version => `<option value="${version}">${version}</option>`).join("");
     if (versions.includes(config.kernel)) {
@@ -711,7 +713,31 @@
           fs.writeFileSync("kernel-cache", Buffer.from(await fetch(`https://github.com/CatCoreV/catcore/releases/download/${config.kernel}/kernel-${config.kernel.replace("v", "")}${targetMappings[config.target]}-${config.arch}`).then(res => res.arrayBuffer())));
           fs.writeFileSync("catcore.d.ts", Buffer.from(await fetch(`https://github.com/CatCoreV/catcore/releases/download/${config.kernel}/catcore.d.ts`).then(res => res.arrayBuffer())));
         } catch {}
-        fs.copyFileSync("kernel-cache", path.join(process.cwd(), "dist", "fs", "boot", "kernel"));
+        fs.copyFileSync("kernel-cache", path.join(process.cwd(), "dist", "fs", "boot", `kernel-${config.kernel.replace("v", "")}${targetMappings[config.target]}-${config.arch}`));
+        fs.linkSync(path.join(process.cwd(), "dist", "fs", "boot", `kernel-${config.kernel.replace("v", "")}${targetMappings[config.target]}-${config.arch}`), path.join(process.cwd(), "dist", "fs", "boot", "kernel"));
+      }
+      fs.mkdirSync(path.join(process.cwd(), "dist", "fs", "boot", "kexts"));
+      if (config.kernel.startsWith(".")) {
+        fs.readdirSync(path.join(path.dirname(config.kernel), "kexts")).forEach(kext => {
+          fs.copyFileSync(path.join(path.dirname(config.kernel), "kexts", kext), path.join(process.cwd(), "dist", "fs", "boot", "kexts", kext));
+        });
+      } else {
+        document.querySelector("#status").innerText = text("downloading_kexts");
+        document.querySelector("#status").style.color = "yellow";
+        try {
+          if (quick) {
+            throw "";
+          }
+          fs.writeFileSync("kexts-cache.zip", Buffer.from(await fetch(`https://github.com/CatCoreV/catcore/releases/download/${config.kernel}/kexts-${targetMappings[config.target]}-${config.arch}.zip`).then(res => res.arrayBuffer())));
+        } catch {}
+          await new Promise(res => {
+            child_process.exec(`${(process.platform == "win32") ? "tar -xf" : "unzip"} ../../../../kexts-cache.zip`, {
+            "cwd": path.join(process.cwd(), "dist", "fs", "boot", "kexts")
+          }, res);
+        });
+      }
+      for (var excludedKext of (system.excludeKexts || [])) {
+        fs.unlinkSync(path.join(process.cwd(), "dist", "fs", "boot", "kexts", excludedKext));
       }
       if (!quick && config.target == "macos-app") {
         document.querySelector("#status").innerText = text("applying_fixes");
