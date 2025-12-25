@@ -176,8 +176,6 @@
       "quick": "Tryb szybki",
       "windows_arm64_unsupported": "Kompilacja dla Windows ARM64 jest niewspierana, skompiluj dla x64 i użyj emulatora",
       "macos_x86_unsupported": "Kompilacja dla macOS x86 jest niewspierana"
-      
-      
     }
   };
 
